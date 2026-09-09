@@ -5,36 +5,55 @@ A dead-simple Markdown writing app built with Qt Quick and C++ that automaticall
 <img width="2948" height="3227" alt="screenshot-2026-06-23_15-24-08" src="https://github.com/user-attachments/assets/4e930c0d-edda-4046-b444-a59eff523329" />
 <img width="2948" height="3227" alt="screenshot-2026-06-23_15-23-23" src="https://github.com/user-attachments/assets/8ced7c26-961b-4ded-b263-84403001a951" />
 
+## Building
 
-## Install
+Omawrite targets macOS on Apple Silicon (arm64 only; no Intel/universal-binary support).
 
-Install via the Omarchy Package Repository via the `omawrite` package. It's installed by default in new installations of Omarchy (from Quattro forward).
+**Dependencies:**
+
+```sh
+xcode-select --install   # Xcode Command Line Tools (compiler, macOS SDK)
+brew install qt          # Qt 6 (qmake, QtQuick, QtWidgets, QtPrintSupport, ...)
+```
+
+Homebrew's Qt isn't put on `PATH` by default. `bin/build` looks for `qmake6` first, which
+resolves once you either run `brew link --force qt` or otherwise put Homebrew's `bin`
+directory on `PATH`.
+
+**Build:**
+
+```sh
+bin/build
+```
+
+This runs `qmake` + `make` and produces an app bundle at `build/omawrite.app`. Run it with
+`open build/omawrite.app`, or launch the embedded binary directly at
+`build/omawrite.app/Contents/MacOS/omawrite`.
+
+**Test:**
+
+```sh
+bin/test
+```
+
+Builds the test suite into `build-tests/` and runs it headlessly.
 
 ## Shortcuts
 
-- `Ctrl+S` saves. Unsaved documents use the XDG desktop portal file picker.
-- `Ctrl+Shift+S` saves as.
-- `Ctrl+O` opens a Markdown file through the portal picker.
-- `Ctrl+P` opens the system print dialog.
-- `Ctrl+N` opens a new Omawrite window.
-- `Ctrl+Z`, `Ctrl+Shift+Z`, and `Ctrl+Y` handle undo and redo.
-- `Super+F` toggles fullscreen. Qt maps this key as `Meta+F`.
-- `Ctrl+F` searches the document. Use `Enter` or `Ctrl+G` for the next match and `Shift+Enter` for the previous match.
-- `Ctrl+H` opens find and replace.
-- `Ctrl+B`, `Ctrl+I`, and `Ctrl+K` insert bold, italic, and link Markdown.
-- `Ctrl+?` shows the keyboard shortcut reference.
+- `Cmd+S` saves. Unsaved documents use the native save panel.
+- `Cmd+Shift+S` saves as.
+- `Cmd+O` opens a Markdown file through the native open panel.
+- `Cmd+P` opens the system print dialog.
+- `Cmd+N` opens a new Omawrite window.
+- `Cmd+Z`, `Cmd+Shift+Z`, and `Cmd+Y` handle undo and redo.
+- `Cmd+Ctrl+F` toggles fullscreen.
+- `Cmd+F` searches the document. Use `Enter` or `Cmd+G` for the next match and `Shift+Enter` for the previous match.
+- `Cmd+H` opens find and replace.
+- `Cmd+B`, `Cmd+I`, and `Cmd+K` insert bold, italic, and link Markdown.
+- `Cmd+?` shows the keyboard shortcut reference.
 
 Unsaved drafts are recovered after an abnormal exit. Omawrite also watches open files
 and warns before an external change can replace local work.
-
-Text follows the desktop text size — `omarchy display text size`, or GNOME's
-`text-scaling-factor` — and re-flows without a restart. The default of 12px leaves
-Omawrite at the size it is designed around; larger and smaller sizes scale from there.
-
-## Requirements
-
-- Qt 6: `qt6-base`, `qt6-declarative`, `qt6-quickcontrols2`
-- `xdg-desktop-portal` and a portal backend
 
 The iA Writer Mono font is bundled under the SIL Open Font License 1.1; see
 `fonts/OFL.txt`. The font is copyright Information Architects Inc. and based on

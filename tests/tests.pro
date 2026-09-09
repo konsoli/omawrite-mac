@@ -1,5 +1,6 @@
 QT += core gui quick testlib
 CONFIG += testcase c++17
+CONFIG -= app_bundle
 TEMPLATE = app
 TARGET = tst_omawrite
 
@@ -12,4 +13,4 @@ HEADERS += \
     ../src/backend.h \
     ../src/markdownhighlighter.h
 
-QT += widgets printsupport quickcontrols2 quickdialogs2 dbus
+QT += widgets printsupport quickcontrols2 quickdialogs2

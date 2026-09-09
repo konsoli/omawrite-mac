@@ -21,9 +21,6 @@ ApplicationWindow {
     readonly property color strongTextColor: backend.themeForeground
     readonly property color mutedColor: darkMode ? "#909191" : "#aeb1b5"
     readonly property color selectionFill: backend.themeSelection
-    // The desktop's text size knob (GNOME's text-scaling-factor, which
-    // `omarchy display text size` drives) anchored so its 12px default leaves
-    // the app at the sizes it was designed around.
     readonly property real textScale: backend.textScale
     readonly property int editorFontPixelSize: scaledSize(20)
     readonly property int editorWidth: Math.min(
@@ -203,7 +200,7 @@ ApplicationWindow {
     }
 
     Shortcut {
-        sequences: ["Meta+F", "F11"]
+        sequence: "Ctrl+Meta+F"
         context: Qt.ApplicationShortcut
         onActivated: toggleFullScreen()
     }
@@ -331,7 +328,7 @@ ApplicationWindow {
         standardButtons: Dialog.Close
         anchors.centerIn: parent
         contentItem: Label {
-            text: "Ctrl+S  Save\nCtrl+Shift+S  Save As\nCtrl+O  Open\nCtrl+N  New Window\nCtrl+F  Find\nCtrl+H  Find and Replace\nCtrl+B  Bold\nCtrl+I  Italic\nCtrl+K  Link\nCtrl+P  Print\nF11 / Super+F  Fullscreen\nCtrl+?  Shortcuts"
+            text: "Cmd+S  Save\nCmd+Shift+S  Save As\nCmd+O  Open\nCmd+N  New Window\nCmd+F  Find\nCmd+H  Find and Replace\nCmd+B  Bold\nCmd+I  Italic\nCmd+K  Link\nCmd+P  Print\nCmd+Ctrl+F  Fullscreen\nCmd+?  Shortcuts"
             lineHeight: 1.5
         }
     }

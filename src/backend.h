@@ -108,8 +108,7 @@ private:
     void clearRecovery();
     QString recoveryPath() const;
     void watchCurrentFile();
-    void loadOmarchyTheme();
-    void watchOmarchyTheme();
+    void applyDefaultTheme();
 
     QUrl m_fileUrl;
     bool m_modified = false;
@@ -139,5 +138,4 @@ private:
     QString m_themeForeground;
     QString m_themeAccent;
     QString m_themeSelection;
-    QFileSystemWatcher m_themeWatcher;
 };

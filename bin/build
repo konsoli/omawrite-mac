@@ -13,7 +13,7 @@ else
   exit 1
 fi
 
-JOBS="$(nproc 2>/dev/null || echo 1)"
+JOBS="$(sysctl -n hw.ncpu 2>/dev/null || echo 1)"
 
 mkdir -p "$BUILD_DIR"
 cd "$BUILD_DIR"
@@ -21,4 +21,4 @@ cd "$BUILD_DIR"
 "$QMAKE" "$ROOT/omawrite.pro"
 make -j"$JOBS"
 
-echo "Built $BUILD_DIR/omawrite"
+echo "Built $BUILD_DIR/omawrite.app"

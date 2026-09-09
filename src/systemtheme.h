@@ -2,8 +2,6 @@
 
 #include <QObject>
 
-class QDBusVariant;
-
 class SystemTheme : public QObject {
     Q_OBJECT
 
@@ -20,16 +18,10 @@ signals:
 public slots:
     void refresh();
 
-private slots:
-    void handlePortalSettingChanged(const QString &nameSpace, const QString &key,
-                                    const QDBusVariant &value);
-
 private:
     bool detectDarkMode() const;
-    bool portalDarkMode(bool *known) const;
-    bool qtDarkMode(bool *known) const;
-    void setDarkMode(bool darkMode);
     qreal detectTextScale() const;
+    void setDarkMode(bool darkMode);
     void setTextScale(qreal textScale);
 
     bool m_darkMode = true;
