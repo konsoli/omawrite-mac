@@ -38,6 +38,27 @@ bin/test
 
 Builds the test suite into `build-tests/` and runs it headlessly.
 
+## Installing
+
+```sh
+ditto build/omawrite.app /Applications/omawrite.app
+/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f /Applications/omawrite.app
+pluginkit -a /Applications/omawrite.app/Contents/PlugIns/OmawriteQuickLook.appex
+```
+
+`ditto` copies the bundle with its code signature intact; dragging it in Finder works as well.
+`lsregister` tells Launch Services about the app, so it shows up under "Open With" for Markdown
+files. `pluginkit -a` adds the Quick Look extension by hand — macOS does not discover it on its
+own, not even from `/Applications`.
+
+Run all three again after a rebuild, followed by `qlmanage -r` so Quick Look drops the extension
+it has cached. `ditto` merges into an existing bundle rather than replacing it, so delete
+`/Applications/omawrite.app` first if you want a copy with nothing left over from an older build.
+
+The app links against Homebrew's Qt through `/opt/homebrew/lib`, so the installed copy keeps
+working only as long as that Qt does. Making the bundle self-contained means running
+`macdeployqt` over it.
+
 ## Quick Look
 
 `bin/build` also builds a Quick Look preview extension into
@@ -46,16 +67,12 @@ file in Finder renders it — headings, bold, lists, links, code, tables — in 
 and typeface instead of showing raw text. The app bundle also registers itself as a handler for
 `.md`, so Finder's "Open With" and the preview's open button land in the editor.
 
-macOS only loads the extension from an app bundle it knows about, and it does not go looking in
-build directories, so register the build once:
+macOS only loads the extension from an app bundle it knows about, so it needs the registration
+steps under [Installing](#installing) — pointing them at `build/omawrite.app` works too, if you
+would rather not install.
 
-```sh
-/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f build/omawrite.app
-pluginkit -a build/omawrite.app/Contents/PlugIns/OmawriteQuickLook.appex
-```
-
-Installing the app in `/Applications` is the usual alternative. `pluginkit -m -p com.apple.quicklook.preview`
-lists the registered preview extensions; `qlmanage -r` reloads them after a rebuild. Note that
+`pluginkit -m -p com.apple.quicklook.preview` lists the registered preview extensions;
+`qlmanage -r` reloads them after a rebuild. Note that
 `qlmanage -p` itself crashes on macOS 26 for every third-party preview extension, Apple's own
 included — test previews in Finder.
 
