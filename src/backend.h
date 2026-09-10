@@ -66,6 +66,7 @@ public:
     Q_INVOKABLE void keepExternalVersion();
     Q_INVOKABLE void printDocument();
     Q_INVOKABLE void newWindow();
+    void openInNewWindow(const QUrl &url);
     Q_INVOKABLE QString clipboardUrl() const;
     Q_INVOKABLE QString clipboardText() const;
     Q_INVOKABLE bool editorTextChanged();

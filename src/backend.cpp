@@ -297,12 +297,20 @@ void Backend::printDocument() {
 }
 
 void Backend::newWindow() {
+    openInNewWindow(QUrl());
+}
+
+void Backend::openInNewWindow(const QUrl &url) {
+    const QString path = url.isLocalFile() ? url.toLocalFile() : QString();
+
     QDir dir(QCoreApplication::applicationDirPath());  // .../Foo.app/Contents/MacOS
     if (dir.dirName() == QLatin1String("MacOS") && dir.cdUp()
         && dir.dirName() == QLatin1String("Contents") && dir.cdUp()
         && dir.absolutePath().endsWith(QLatin1String(".app"))) {
-        const bool started = QProcess::startDetached(QStringLiteral("/usr/bin/open"),
-            {QStringLiteral("-n"), QStringLiteral("-a"), dir.absolutePath()});
+        QStringList arguments{QStringLiteral("-n"), QStringLiteral("-a"), dir.absolutePath()};
+        if (!path.isEmpty())
+            arguments << path;
+        const bool started = QProcess::startDetached(QStringLiteral("/usr/bin/open"), arguments);
         if (!started)
             setStatus(QStringLiteral("Could not open a new window."));
         return;
@@ -311,7 +319,7 @@ void Backend::newWindow() {
     // Not running from inside a .app bundle (e.g. a raw dev binary) — fall
     // back to relaunching the executable directly.
     const bool started = QProcess::startDetached(QCoreApplication::applicationFilePath(),
-                                                 QStringList());
+        path.isEmpty() ? QStringList() : QStringList{path});
     if (!started)
         setStatus(QStringLiteral("Could not open a new window."));
 }

@@ -21,4 +21,35 @@ cd "$BUILD_DIR"
 "$QMAKE" "$ROOT/omawrite.pro"
 make -j"$JOBS"
 
+# The Quick Look preview extension is a separate, Qt-free target: a sandboxed
+# .appex that quicklookd launches on its own, built straight with clang against
+# the Command Line Tools SDK (no Xcode project involved).
+SDK="$(xcrun --show-sdk-path)"
+APPEX="$BUILD_DIR/omawrite.app/Contents/PlugIns/OmawriteQuickLook.appex"
+
+rm -rf "$APPEX"
+mkdir -p "$APPEX/Contents/MacOS" "$APPEX/Contents/Resources"
+
+clang -arch arm64 -mmacosx-version-min=12.0 -isysroot "$SDK" -fobjc-arc -O2 \
+  -I"$ROOT/third_party/md4c" \
+  -framework Foundation -framework QuickLookUI -framework UniformTypeIdentifiers \
+  -Wl,-e,_NSExtensionMain \
+  -o "$APPEX/Contents/MacOS/OmawriteQuickLook" \
+  "$ROOT/macos/quicklook/OmawritePreviewProvider.m" \
+  "$ROOT/third_party/md4c/md4c.c" \
+  "$ROOT/third_party/md4c/md4c-html.c" \
+  "$ROOT/third_party/md4c/entity.c"
+
+cp "$ROOT/macos/quicklook/Info.plist" "$APPEX/Contents/Info.plist"
+cp "$ROOT/macos/quicklook/preview.css" "$APPEX/Contents/Resources/"
+cp "$ROOT"/fonts/iAWriterMonoS-*.ttf "$APPEX/Contents/Resources/"
+
+# Sign the extension first, then the app: embedding the .appex invalidates the
+# signature the linker put on the app binary, and both targets have to be
+# signed the same way (ad hoc here).
+codesign --force --sign - \
+  --entitlements "$ROOT/macos/quicklook/entitlements.plist" \
+  "$APPEX"
+codesign --force --sign - "$BUILD_DIR/omawrite.app"
+
 echo "Built $BUILD_DIR/omawrite.app"

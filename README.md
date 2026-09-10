@@ -38,6 +38,27 @@ bin/test
 
 Builds the test suite into `build-tests/` and runs it headlessly.
 
+## Quick Look
+
+`bin/build` also builds a Quick Look preview extension into
+`build/omawrite.app/Contents/PlugIns/OmawriteQuickLook.appex`, so pressing space on a Markdown
+file in Finder renders it — headings, bold, lists, links, code, tables — in Omawrite's colours
+and typeface instead of showing raw text. The app bundle also registers itself as a handler for
+`.md`, so Finder's "Open With" and the preview's open button land in the editor.
+
+macOS only loads the extension from an app bundle it knows about, and it does not go looking in
+build directories, so register the build once:
+
+```sh
+/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f build/omawrite.app
+pluginkit -a build/omawrite.app/Contents/PlugIns/OmawriteQuickLook.appex
+```
+
+Installing the app in `/Applications` is the usual alternative. `pluginkit -m -p com.apple.quicklook.preview`
+lists the registered preview extensions; `qlmanage -r` reloads them after a rebuild. Note that
+`qlmanage -p` itself crashes on macOS 26 for every third-party preview extension, Apple's own
+included — test previews in Finder.
+
 ## Shortcuts
 
 - `Cmd+S` saves. Unsaved documents use the native save panel.

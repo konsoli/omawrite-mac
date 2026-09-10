@@ -64,3 +64,19 @@ The iA Writer Mono font is bundled (`fonts/`, SIL OFL 1.1) and loaded in `main.c
 `QFontDatabase::addApplicationFont` from the Qt resource system (`src/resources.qrc`); it's also
 used as the app's interface font, scaled by `Backend::textScale` (currently always 1.0 — there's
 no system-wide text-scale setting to follow on macOS, but the plumbing stays in case that changes).
+
+## Quick Look extension
+
+`macos/quicklook/` is a second, Qt-free build target: a sandboxed Quick Look preview extension
+(`OmawritePreviewProvider.m`, a `QLPreviewProvider` subclass) that `bin/build` compiles with plain
+`clang` against the Command Line Tools SDK and drops into `omawrite.app/Contents/PlugIns/`. It
+renders Markdown to HTML with the vendored md4c parser in `third_party/md4c/` (MIT, the same
+parser Qt uses behind `QTextDocument::setMarkdown`) and styles it with `preview.css`, whose
+palette duplicates `Backend::applyDefaultTheme()` and `MarkdownHighlighter::rebuildFormats()` —
+change the colours in one place and the other has to follow. The extension runs in its own
+process, so it shares no code with the app; the fonts are copied into its bundle and inlined as
+data URIs. `bin/build` signs the `.appex` (with `macos/quicklook/entitlements.plist`) before
+signing the app, since embedding it invalidates the app's own signature.
+
+Note that `qlmanage -p` crashes on macOS 26 for every third-party preview extension (Apple's own
+included), so test previews in Finder rather than through `qlmanage`.
